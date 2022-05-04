@@ -74,6 +74,7 @@ def post():
     try:
         mat = fill_mat(request_data["data"])
         if mat[0] != []:
+            print(request_data)
             if request_data["type"]["type"] == ["health"]:
                 for i in range(len(mat[0])):
                     q = f"""
