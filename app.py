@@ -91,8 +91,7 @@ def post():
                         blood_pressure_systolic,
                         blood_pressure_diastolic,
                         respiratory_rate,
-                        distance_walked,
-                        blood_pressure
+                        distance_walked
                     ) VALUES (
                         "{request_data['type']['device id'][0]}",
                         {mat[0][i]},
@@ -107,8 +106,7 @@ def post():
                         {mat[9][i]},
                         {mat[10][i]},
                         {mat[11][i]},
-                        {mat[12][i]},
-                        {mat[13][i]}
+                        {mat[12][i]}
                     );
                     """
                     print(q)
