@@ -1,8 +1,16 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 import mariadb
 import sys
 
 app = Flask(__name__)
+
+
+def device_status_generator(device_id):
+    @app.route('/status/'+device_id,methods=["GET"])
+    def status(status):
+        d = {'status': status}
+        return jsonify(d)
+    return status
 
 
 @app.route('/')
@@ -51,6 +59,29 @@ def fill_mat(res):
         for _ in range(m-len(mat[i])):
             mat[i].append("NULL")
     return mat
+
+def fetch_status(device_id):
+    result = {}
+
+    conn = mariadb.connect(
+            user="fcelaya",
+            password="passtest",
+            host='localhost',
+            port=3306,
+            database='prl'
+        )
+    
+    cur = conn.cursor()
+
+    q = f"SELECT * FROM devices WHERE device_id = '{device_id}'"
+
+    cur.execute(q)
+    cur.commit()
+
+    for (device_id, status, emergency) in cur:
+        cur.close()
+        conn.close()
+        return {'device_id': device_id, 'status': status, 'emergency':emergency}
 
 
 @app.route("/post", methods=['POST'])
@@ -150,7 +181,14 @@ def post():
         cur.close()
         conn.close()
 
-    return f"Added to database {request_data['type']['type'][0]} the following: \n{request_data['data']}"
+    device_id = request_data["type"]["device id"]
+    try:
+        status_dict = fetch_status(device_id)
+    except mariadb.Error as e:
+        print(f"Error: {e}")
+
+    status_dict["message"] = f"Added to database {request_data['type']['type'][0]} the following: \n{request_data['data']}"
+    return jsonify(status_dict)
 
 
 if __name__ == '__main__':
