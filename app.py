@@ -73,10 +73,10 @@ def fetch_status(device_id):
     
     cur = conn.cursor()
 
-    q = f"SELECT * FROM devices WHERE device_id = '{device_id}'"
+    q = f'SELECT * FROM devices WHERE device_id = "{device_id}"'
 
     cur.execute(q)
-    cur.commit()
+    conn.commit()
 
     for (device_id, status, emergency) in cur:
         cur.close()
@@ -104,8 +104,9 @@ def post():
 
     try:
         mat = fill_mat(request_data["data"])
+        print("__________________" + request_data['type']['device id'][0])
         if mat[0] != []:
-            print(request_data)
+            # print(request_data)
             if request_data["type"]["type"] == ["health"]:
                 for i in range(len(mat[0])):
                     q = f"""
@@ -141,7 +142,6 @@ def post():
                         {mat[12][i]}
                     );
                     """
-                    print(q)
                     cur.execute(q)
 
             elif request_data["type"]["type"] == ["motion"]:
@@ -173,6 +173,9 @@ def post():
                         {mat[9][i]}
                     );
                     """
+                    # print("________________")
+                    # print(q)
+                    # print("________________")
                     cur.execute(q)
             conn.commit()
     except mariadb.Error as e:
@@ -182,9 +185,12 @@ def post():
         conn.close()
 
     device_id = request_data["type"]["device id"]
+
     try:
+        print("_______________ entered try fetch status")
         status_dict = fetch_status(device_id)
     except mariadb.Error as e:
+        print("_____________Error is here")
         print(f"Error: {e}")
 
     status_dict["message"] = f"Added to database {request_data['type']['type'][0]} the following: \n{request_data['data']}"
