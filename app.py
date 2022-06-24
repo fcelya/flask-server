@@ -4,6 +4,8 @@ import sys
 
 app = Flask(__name__)
 
+def alert_supervisor(device_id):
+    return
 
 def device_status_generator(device_id):
     @app.route('/status/'+device_id,methods=["GET"])
@@ -165,7 +167,21 @@ def post():
                 );
                 """
                 cur.execute(q)
-            conn.commit()
+
+        elif request_data["type"]["type"] == ["ecg"]:
+            q = F"""
+            INSERT INTO motion (
+                device_id,
+                ecg,
+                device_time
+            ) VALUES (
+                "{request_data['type']['device id'][0]}",
+                {request_data['data']['ecg']},
+                {request_data['data']['timestamp']}
+            );
+            """
+            cur.execute(q)
+        conn.commit()
     except mariadb.Error as e:
         print(f"Error: {e}")
     finally:
@@ -182,6 +198,10 @@ def post():
     status_dict["message"] = f"Added to database {request_data['type']['type'][0]} the following: \n{request_data['data']}"
     return jsonify(status_dict)
 
+@app.route("/alert", methods=['POST'])
+def alert():
+    request_data = request.json
+    alert_supervisor(request_data["device_id"])
 
 if __name__ == '__main__':
     app.run(debug=True, port=80, host='0.0.0.0')
