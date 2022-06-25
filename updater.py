@@ -5,7 +5,6 @@ from time import sleep
 def clean(cur,conn):
     cur.close()
     conn.close()
-    print("cleaned")
     return
 
 def predict(n):
@@ -58,10 +57,8 @@ def status_updater():
             try:
                 cur.execute(f"""SELECT heart_rate FROM health WHERE id=(SELECT MAX(id) FROM health WHERE device_id="{device}" and heart_rate is not NULL);""")
                 hr = cur.fetchall()
-                print("Entered with",hr)
             except mariadb.Error as e:
                 print(f"Error: {e}")
-            print(device,hr)
             if len(hr)==0:
                 hr=[[65]]
 
@@ -76,7 +73,6 @@ def status_updater():
             
         cur.close()
         conn.close()
-        print("Cleaned")
         sleep(10)
     
     return
