@@ -198,10 +198,17 @@ def post():
     status_dict["message"] = f"Added to database {request_data['type']['type'][0]} the following: \n{request_data['data']}"
     return jsonify(status_dict)
 
-@app.route("/alert", methods=['POST'])
+@app.route("/alert")
 def alert():
-    request_data = request.json
-    alert_supervisor(request_data["device_id"])
+    id = request.args.get("device_id")
+    alert_supervisor(id)
+    return f"Alerted supervisor of device {id}"
+    
+@app.route("/status")
+def status():
+    id = request.args.get("device_id")
+    return jsonify(fetch_status(id))
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=80, host='0.0.0.0')
