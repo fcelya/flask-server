@@ -14,10 +14,33 @@ def device_status_generator(device_id):
         return jsonify(d)
     return status
 
+def update_emergency(device_id,emergency):
+    status="Error when updating emergency"
+    try:
+        conn = mariadb.connect(
+            user="fcelaya",
+            password="passtest",
+            host='localhost',
+            port=3306,
+            database='prl'
+        )
+    except mariadb.Error as e:
+        print(f"Got following error connecting to MariaDB: {e}")
+        sys.exit(1)
+    cur = conn.cursor()
+    try:
+        cur.execute(f'UPDATE devices SET emergency="{emergency}" WHERE device_id={device_id};')
+        status="Emergency updated"
+    except mariadb.Error as e:
+        print(f"Error: {e}")
+    cur.close()
+    conn.close()
+    return {"message": status}
+
 
 @app.route('/')
 def index():
-    return 'Hello World!'
+    return 'Welcome to the PRL app server!\n\nCurrent endpoints are: /db, /post, /alert, /status, /post-emergency'
 
 
 @app.route('/db')
@@ -211,8 +234,16 @@ def alert():
     id = request_data["device_id"]
     alert_supervisor(id)
     return jsonify({"message":f"Alerted supervisor of device {id}"})
+
+@app.route("/update-emergency",methods=['POST'])
+def alert():
+    request_data = request.json
+    id = request_data["device_id"]
+    emergency = request_data["emergency"]
+    message = update_emergency(id,emergency)
+    return jsonify(message)
     
-@app.route("/status")
+@app.route("/status",methods=['GET'])
 def status():
     id = request.args.get("device_id")
     return jsonify(fetch_status(id))
