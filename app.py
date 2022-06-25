@@ -202,7 +202,7 @@ def post():
 def alert():
     id = request.args.get("device_id")
     alert_supervisor(id)
-    return f"Alerted supervisor of device {id}"
+    return jsonify("message":f"Alerted supervisor of device {id}"})
     
 @app.route("/status")
 def status():
