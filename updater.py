@@ -8,9 +8,9 @@ def clean(cur,conn):
     return
 
 def predict(n):
-    fr0=1
-    fr1=10
-    fr2=20
+    fr0=2
+    fr1=6
+    fr2=2
 
     n0=fr0*fr1*fr2/fr0
     n1=fr0*fr1*fr2/fr1
