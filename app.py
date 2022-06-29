@@ -236,7 +236,7 @@ def alert():
     return jsonify({"message":f"Alerted supervisor of device {id}"})
 
 @app.route("/update-emergency",methods=['POST'])
-def alert():
+def update_emergency():
     request_data = request.json
     id = request_data["device_id"]
     emergency = request_data["emergency"]
